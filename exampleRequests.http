@@ -1,0 +1,74 @@
+### Register User
+POST http://localhost:3000/auth/register
+Authorization: Basic YWRtaW46cGFzc3dvcmQ=
+Content-Type: application/json
+
+{
+  "username": "user1",
+  "password": "password",
+  "role": "admin"
+}
+
+### Get User Info
+
+POST http://localhost:3000/auth/login
+Authorization: Basic dXNlcjE6cGFzc3dvcmQ=
+
+
+### Upload Books
+POST http://localhost:3000/books/upload
+Authorization: Basic dXNlcjE6cGFzc3dvcmQ=
+Content-Type: multipart/form-data; boundary=WebKitFormBoundary
+
+--WebKitFormBoundary
+Content-Disposition: form-data; name="file"; filename="file.csv"
+Content-Type: application/csv
+
+< ./books.csv
+
+--WebKitFormBoundary--
+
+
+### Get Books
+GET http://localhost:3000/books/
+
+### Get Book detail
+GET http://localhost:3000/books/3
+
+
+### Update Book with Etag
+PUT http://localhost:3000/books/3
+Authorization: Basic dXNlcjE6cGFzc3dvcmQ=
+Content-Type: application/json
+If-Match: 307ef46dd6947681a6a17b289594804b
+
+{
+  "bookId": 3,
+  "goodreadsBookId": 41865,
+  "bestBookId": 41865,
+  "workId": 3212258,
+  "booksCount": 226,
+  "isbn": "316015849",
+  "isbn13": 92323,
+  "authors": "Stephenie Meyer",
+  "originalPublicationYear": 2005,
+  "originalTitle": "Twilight",
+  "title": "Twilight (Twilight, #1)",
+  "languageCode": "en-US",
+  "averageRating": 3.57,
+  "ratingsCount": 3866839,
+  "workRatingsCount": 3916824,
+  "workTextReviewsCount": 95009,
+  "ratings1": 456191,
+  "ratings2": 436802,
+  "ratings3": 793319,
+  "ratings4": 875073,
+  "ratings5": 1355439,
+  "imageUrl": "https://images.gr-assets.com/books/1361039443m/41865.jpg",
+  "smallImageUrl": "https://images.gr-assets.com/books/1361039443s/41865.jpg",
+  "reservedUntil": null,
+  "reservedBy": null
+}
+
+
+
