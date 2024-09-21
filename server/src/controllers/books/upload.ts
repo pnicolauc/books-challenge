@@ -31,7 +31,7 @@ export default async (req: Request, res: Response) => {
       errors.push("error upserting books");
     }
 
-    MailService.sendBooksUploadReport(results.length, errors);
+    await MailService.sendBooksUploadReport(results.length, errors);
   };
 
   bufferStream

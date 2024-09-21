@@ -2,6 +2,7 @@ import typia from "typia";
 import { IBook, IBookUrlParams } from "../../models/book";
 import { Request, Response } from "express";
 import { BookService } from "../../services/booksService";
+import { IOperationResult } from "../../models/shared";
 
 export default async (
   req: Request<IBookUrlParams, {}, IBook, {}>,
@@ -26,21 +27,6 @@ export default async (
     return;
   }
 
-  const currentBookResult = await BookService.findOne(req.body.bookId);
-  const ifMatchHeader = req.headers["if-match"];
-
-  if (currentBookResult.data && ifMatchHeader) {
-    const ifMatchValidation = BookService.validateEtag(
-      currentBookResult.data,
-      ifMatchHeader
-    );
-
-    if (!ifMatchValidation) {
-      res.status(412).send();
-      return;
-    }
-  }
-
   req.body.averageRating = calculateAverageRating(req.body);
   req.body.ratingsCount =
     req.body.ratings1 +
@@ -49,7 +35,22 @@ export default async (
     req.body.ratings4 +
     req.body.ratings5;
 
-  const dbResult = await BookService.upsert(req.body);
+  let dbResult: IOperationResult<boolean>;
+  const ifMatchHeader = req.header("If-Match");
+
+  if (ifMatchHeader) {
+
+    dbResult = await BookService.updateIf(req.body, (book: IBook) => {
+      return BookService.validateEtag(book, ifMatchHeader);
+    });
+
+    if (dbResult.data === false) {
+      res.status(412).send();
+      return;
+    }
+  } else {
+    dbResult = await BookService.upsert(req.body);
+  }
 
   if (!dbResult.success) {
     res.status(500).send();

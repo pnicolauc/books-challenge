@@ -126,6 +126,48 @@ export class BookService {
     }
   }
 
+  static async updateIf(
+    book: IBook,
+    condition: (book: IBook) => boolean
+  ): Promise<IOperationResult<boolean>> {
+    const transaction = await dbClient().transaction();
+
+    try {
+      const existingBook = await Book.findByPk(book.bookId, { transaction });
+      if (!existingBook) {
+        await transaction.rollback();
+        return {
+          success: false,
+          data: null,
+          error: "Book not found",
+        };
+      }
+
+      if (!condition(existingBook.dataValues)) {
+        await transaction.rollback();
+        return {
+          success: false,
+          data: false,
+          error: "Precondition failed",
+        };
+      }
+
+      await existingBook.update(book, { transaction });
+
+      await transaction.commit();
+      return {
+        success: true,
+        data: true,
+      };
+    } catch (error) {
+      await transaction.rollback();
+      return {
+        success: false,
+        data: null,
+      };
+    }
+  }
+
   static async reserve(
     bookId: number,
     reservedBy: string,

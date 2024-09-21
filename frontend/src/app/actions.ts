@@ -104,5 +104,5 @@ export const searchBooks = async (formData: FormData) => {
       originalPublicationYear.valueOf() as string
     );
   }
-  redirect(`/?${newSearchParams.toString()}`, RedirectType.push);
+  redirect(`?${newSearchParams.toString()}`, RedirectType.push);
 };
