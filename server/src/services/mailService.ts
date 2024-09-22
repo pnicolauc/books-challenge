@@ -3,27 +3,36 @@ import Mailjet from "node-mailjet";
 
 config();
 
-if (!process.env.MAILJET_API_KEY || !process.env.MAILJET_API_SECRET) {
-  throw new Error("MAILJET_API_KEY and MAILJET_API_SECRET are required");
-}
+let sendEmail = false;
+let mailJet: Mailjet;
 
-if (!process.env.MAIL_SENDER) {
-  throw new Error("MAIL_SENDER is required");
-}
+if (
+  process.env.MAILJET_API_KEY &&
+  process.env.MAILJET_API_SECRET &&
+  process.env.MAIL_SENDER &&
+  process.env.SYSTEM_ADMIN_EMAIL
+) {
+  sendEmail = true;
 
-if (process.env.SYSTEM_ADMIN_EMAIL === undefined) {
-  throw new Error("SYSTEM_ADMIN_EMAIL is required");
+  mailJet = new Mailjet({
+    apiKey: process.env.MAILJET_API_KEY,
+    apiSecret: process.env.MAILJET_API_SECRET,
+  });
+} else {
+  console.log("Email not configured. Will log to console instead.");
 }
-
-const mailJet = new Mailjet({
-  apiKey: process.env.MAILJET_API_KEY,
-  apiSecret: process.env.MAILJET_API_SECRET,
-});
 
 export class MailService {
   static async sendBooksUploadReport(successfulEntries: number, errors: any[]) {
+    if(!sendEmail) {
+      console.log("Finished processing book upload");
+      console.log(`successfulEntries: ${successfulEntries}`);
+      console.log(`Total errors: ${errors.length}`);
+      return;
+    }
+
     try {
-      const request = await mailJet.post("send", { version: "v3.1" }).request({
+      await mailJet.post("send", { version: "v3.1" }).request({
         Messages: [
           {
             From: {
@@ -36,19 +45,16 @@ export class MailService {
                 Name: "System Admin",
               },
             ],
-            Subject: "Your email flight plan!",
-            TextPart:
-              "Dear passenger 1, welcome to Mailjet! May the delivery force be with you!",
-            HTMLPart:
-              '<h3>Dear passenger 1, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!</h3><br />May the delivery force be with you!',
+            Subject: "Book Upload Report",
+            TextPart: `A book upload has been processed Here is the report. ${successfulEntries} books were successfully uploaded. ${errors.length} errors occurred.`,
+            HTMLPart: `<h3>A book upload has been processed Here is the report.</h3><br />May the delivery force be with you! ${successfulEntries} books were successfully uploaded. ${
+              errors.length
+            } errors occurred.<br /><ul>${errors
+              .map((error) => `<li>${error}</li>`)
+              .join("")}</ul>`,
           },
         ],
       });
-
-      // TODO send email
-      console.log("Finished processing book upload");
-      console.log(`successfulEntries: ${successfulEntries}`);
-      console.log(`Total errors: ${errors.length}`);
     } catch (e) {
       console.error("Error sending email", e);
     }
