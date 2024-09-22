@@ -39,13 +39,15 @@ export default async (
   const ifMatchHeader = req.header("If-Match");
 
   if (ifMatchHeader) {
-
     dbResult = await BookService.updateIf(req.body, (book: IBook) => {
       return BookService.validateEtag(book, ifMatchHeader);
     });
 
     if (dbResult.data === false) {
       res.status(412).send();
+      return;
+    }else if (dbResult.data === true) {
+      res.status(204).send();
       return;
     }
   } else {

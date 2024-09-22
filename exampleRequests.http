@@ -10,7 +10,6 @@ Content-Type: application/json
 }
 
 ### Get User Info
-
 POST http://localhost:3000/auth/login
 Authorization: Basic dXNlcjE6cGFzc3dvcmQ=
 
@@ -28,9 +27,11 @@ Content-Type: application/csv
 
 --WebKitFormBoundary--
 
-
 ### Get Books
-GET http://localhost:3000/books/
+GET http://localhost:3000/books
+
+### Get Books with filters
+GET http://localhost:3000/books?page=1&pageSize=10&authors=J&title=Harry&originalPublicationYear=2005&sort=averageRating%2BASC
 
 ### Get Book detail
 GET http://localhost:3000/books/3
@@ -40,7 +41,7 @@ GET http://localhost:3000/books/3
 PUT http://localhost:3000/books/3
 Authorization: Basic dXNlcjE6cGFzc3dvcmQ=
 Content-Type: application/json
-If-Match: 307ef46dd6947681a6a17b289594804b
+If-Match: 0b5d60a7a9668a79e1b6ac7282cb1d32
 
 {
   "bookId": 3,

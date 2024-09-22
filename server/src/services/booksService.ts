@@ -147,8 +147,7 @@ export class BookService {
         await transaction.rollback();
         return {
           success: false,
-          data: false,
-          error: "Precondition failed",
+          data: false
         };
       }
 

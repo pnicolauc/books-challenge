@@ -155,9 +155,10 @@ export const BookUpdateForm = ({ book }: BookUpdateFormProps) => {
         Book updated
       </div>
       <div className={`text-red-500 ${!state.error && "invisible"}`}>
-        {state.error}{' '}
+        {state.error}
       </div>
       <input type="hidden" name="bookId" value={book.bookId} />
+      {book.etag && <input type="hidden" name="etag" value={book.etag} />}
       <div className="md:flex flex-wrap gap-4">
         {formInputs.map((input) => (
           <InputGroup key={input.name}>

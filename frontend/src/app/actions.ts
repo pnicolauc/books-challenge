@@ -41,7 +41,13 @@ export const updateBook = async (
 ): Promise<IOperationResult<IBook>> => {
   const book = convertFormDataToObject(formData);
 
-  const response = await booksApi.update(`${book.bookId}`, book);
+  let etag: string | undefined = undefined;
+
+  if(formData.get("etag")) {
+    etag = formData.get("etag") as string;
+  }
+
+  const response = await booksApi.update(`${book.bookId}`, book, etag);
 
   revalidatePath("/");
   revalidatePath("/admin");

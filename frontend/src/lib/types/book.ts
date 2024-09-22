@@ -22,6 +22,7 @@ export interface IBook {
   ratings5: number;
   imageUrl: string;
   smallImageUrl: string;
+  etag?: string;
 }
 
 export interface IBookSearchParams {

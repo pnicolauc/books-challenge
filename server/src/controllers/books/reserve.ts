@@ -3,6 +3,8 @@ import { IBookReservationBody, IBookUrlParams } from "../../models/book";
 import { Request, Response } from "express";
 import { BookService } from "../../services/booksService";
 
+const fifteenMinutesInMilliseconds = 15 * 60 * 1000;
+
 export default async (
   req: Request<IBookUrlParams, {}, IBookReservationBody, {}>,
   res: Response
@@ -16,7 +18,7 @@ export default async (
   }
 
   const now = new Date();
-  const fifteenMinutesFromNow = new Date(now.getTime() + 15 * 60 * 1000);
+  const fifteenMinutesFromNow = new Date(now.getTime() + fifteenMinutesInMilliseconds);
 
   const dbResult = await BookService.reserve(parseInt(req.params.bookId), req.body.reservedBy, fifteenMinutesFromNow);
 
