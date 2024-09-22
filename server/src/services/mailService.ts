@@ -50,7 +50,7 @@ export class MailService {
             HTMLPart: `<h3>A book upload has been processed Here is the report.</h3><br />May the delivery force be with you! ${successfulEntries} books were successfully uploaded. ${
               errors.length
             } errors occurred.<br /><ul>${errors
-              .map((error) => `<li>${error}</li>`)
+              .map((error) => `<li>${JSON.stringify(error)}</li>`)
               .join("")}</ul>`,
           },
         ],

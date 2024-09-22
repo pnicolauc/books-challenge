@@ -66,6 +66,11 @@ Books can be uploaded through the admin interface. But they can be also seeded m
 
 - Call "Register User" and "Upload Books" endpoints in `exampleRequests.http`
 
+## HTTP Ports
+
+- Frontend: 8080
+- Server: 3000
+
 ## Docs
 
 Check `docs/` for information about design choices, implementation and other technical details.

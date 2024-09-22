@@ -20,24 +20,40 @@ The project structure follows the structure recommended in the Next.js App Route
 
 Authentication is done using BASIC authentication. This authentication is controlled in the frontend by sending a 'WWW-Authenticate' header if the user accesses any page prefixed with `/admin`. The middleware then confirms with the server that the user credentials are correct. The credentials provided are then used for endpoints that require authentication on the server.
 
+![alt text](auth.png)
+
 ## Pages
 
 ### Public Book List
 
-TODO query params
+![alt text](public_list.png)
+![alt text](public_search.png)
+![alt text](public_sort.png)
+
+The search and sort filters and the pagination links apply query params to the url that in turn convert to query params when querying the backend itself. Title and Author filters partially match results.
+
+`http://localhost:8080/?title=harry&authors=j.&languageCode=eng&pageSize=12&sort=averageRating%2BASC`
 
 ### Public Book Detail
 
-TODO reservation
+![alt text](public_detail.png)
+
+![alt text](public_reserved.png)
+
+Detail page shows more book details than the ones present on the list and allow a user to reserve a book. The reservation time is 15 minutes and is set on the backend, After this time the book becomes available to be reserved again.
 
 ### Admin Book List
 
-TODO upload
+![alt text](upload.png)
+
+The admin book list page was duplicated from the public page. One addition this page has is the upload feature.
 
 ### Admin Book Detail
 
 TODO etags 
 TODO reservations
+
+![alt text](private_detail.png)
 
 ## Improvements
 
@@ -45,4 +61,5 @@ improvements can be made to the current implementation, with the most relevant b
 
 - Better error handling - Returning more specific errors to the user.
 - Better data validation - More granular validation, for example, enforce that rating must be a number between 1 and 5.
-- Improve admin update form and add preview
+- Change admin list page to a more appropriate administration layout. For example, present the books as a table instead of cards. 
+- Improve admin update form and add preview.

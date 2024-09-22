@@ -73,7 +73,7 @@ export default async function PublicBooksPage({ searchParams }: PublicBooksPageP
   }
 
   return (
-    <PageFrame title="Books Challenge" navHeader={<Link href="/admin">Administration</Link>} header={<Header />} footer={<Footer />}>
+    <PageFrame title="Books Challenge" navHeader={<Link prefetch={false} href="/admin">Administration</Link>} header={<Header />} footer={<Footer />}>
       {list}
     </PageFrame>
   );

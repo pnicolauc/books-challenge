@@ -11,6 +11,8 @@ export const BookSummary = ({ book }: BookSummaryProps) => {
   const isBookReserved =
     !!book?.reservedUntil && new Date(book.reservedUntil) > new Date();
 
+  const authors = book.authors.split(",");
+
   return (
     <div className="flex flex-col">
       <div className="m-2 flex">
@@ -29,7 +31,7 @@ export const BookSummary = ({ book }: BookSummaryProps) => {
           </h5>
           <div className="flex flex-col flex-1 py-4 px-2">
             <div className="flex items-center">
-              <p className="font-normal text-gray-400">{book.authors}</p>
+              <p className="font-normal text-gray-400">{authors[0]} {authors.length > 1 && `+ ${authors.length -1 }` }</p>
               <span className="w-1 h-1 mx-1.5 bg-gray-500 rounded-full bg-gray-400"></span>
               <p className="font-normal text-gray-400">
                 {book.originalPublicationYear}

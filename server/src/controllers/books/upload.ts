@@ -28,7 +28,9 @@ export default async (req: Request, res: Response) => {
   const onEnd = async () => {
     const dbResult = await BookService.upsertMany(results);
     if (!dbResult.success) {
-      errors.push("error upserting books");
+      errors.push("error upserting books to db");
+      MailService.sendBooksUploadReport(0, errors);
+      return;
     }
 
     await MailService.sendBooksUploadReport(results.length, errors);
@@ -67,26 +69,26 @@ const parseAndValidateCsvEntry = (
 const parseBookCsvEntry = (data: any): IBook => {
   return {
     bookId: parseInt(data.book_id),
-    goodreadsBookId: parseInt(data.goodreads_book_id),
-    bestBookId: parseInt(data.best_book_id),
-    workId: parseInt(data.work_id),
-    booksCount: parseInt(data.books_count),
+    goodreadsBookId: parseInt(data.goodreads_book_id) || 0,
+    bestBookId: parseInt(data.best_book_id)  || 0,
+    workId: parseInt(data.work_id) || 0,
+    booksCount: parseInt(data.books_count) || 0,
     isbn: data.isbn,
-    isbn13: parseInt(data.isbn13),
+    isbn13: parseInt(data.isbn13) || 0,
     authors: data.authors,
-    originalPublicationYear: parseInt(data.original_publication_year),
+    originalPublicationYear: parseInt(data.original_publication_year) || 0,
     originalTitle: data.original_title,
     title: data.title,
     languageCode: data.language_code,
-    averageRating: parseFloat(data.average_rating),
-    ratingsCount: parseInt(data.ratings_count),
-    workRatingsCount: parseInt(data.work_ratings_count),
-    workTextReviewsCount: parseInt(data.work_text_reviews_count),
-    ratings1: parseInt(data.ratings_1),
-    ratings2: parseInt(data.ratings_2),
-    ratings3: parseInt(data.ratings_3),
-    ratings4: parseInt(data.ratings_4),
-    ratings5: parseInt(data.ratings_5),
+    averageRating: parseFloat(data.average_rating) || 0,
+    ratingsCount: parseInt(data.ratings_count) || 0,
+    workRatingsCount: parseInt(data.work_ratings_count) || 0,
+    workTextReviewsCount: parseInt(data.work_text_reviews_count) || 0,
+    ratings1: parseInt(data.ratings_1) || 0,
+    ratings2: parseInt(data.ratings_2) || 0,
+    ratings3: parseInt(data.ratings_3) || 0,
+    ratings4: parseInt(data.ratings_4) || 0,
+    ratings5: parseInt(data.ratings_5) || 0,
     imageUrl: data.image_url,
     smallImageUrl: data.small_image_url,
   };

@@ -86,7 +86,7 @@ export default async function PublicBooksPage({
 
   return (
     <PageFrame
-      title="Books Challenge"
+      title="Books Challenge - Admin"
       navHeader={<Link href="/">Public</Link>}
       header={<Header />}
       footer={<Footer />}

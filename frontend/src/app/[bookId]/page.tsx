@@ -32,7 +32,7 @@ export default async function PublicBookPage({ params: { bookId } }: PublicBookP
   return (
     <PageFrame
       title="Books Challenge"
-      navHeader={<Link href={`/admin/${bookId}`}>Administration</Link>}
+      navHeader={<Link prefetch={false} href={`/admin/${bookId}`}>Administration</Link>}
       header={<Header />}
       footer={<Footer />}
     >

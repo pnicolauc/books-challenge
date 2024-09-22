@@ -84,6 +84,8 @@ You can view specific request examples in the project root `exampleRequests.http
 ### Upload
 The upload implementation reads a file sent through a `multipart/form-data` form and bulk inserts all the successfully parsed rows. When completed, an email is sent to the confiured system admin with details of the book upload (successfully uploaded books, errors, etc).
 
+![Email send after uploading books](email.png)
+
 ### ETags
 
 Fetching and updating a book support etags. On the detail endpoint, a response header `etag` is sent with the `md5` of the content. When calling the update endpoint, an `If-Match`  (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Match) header may be added to the request to only update the resource if the etag matches the one on the server. This prevents a user to replace new data that he hasn't seen.

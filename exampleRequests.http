@@ -26,6 +26,18 @@ Content-Type: application/csv
 < ./books.csv
 
 --WebKitFormBoundary--
+### Upload Books
+POST http://localhost:3000/books/upload
+Authorization: Basic dXNlcjE6cGFzc3dvcmQ=
+Content-Type: multipart/form-data; boundary=WebKitFormBoundary
+
+--WebKitFormBoundary
+Content-Disposition: form-data; name="file"; filename="file.csv"
+Content-Type: application/csv
+
+< ./books_big.csv
+
+--WebKitFormBoundary--
 
 ### Get Books
 GET http://localhost:3000/books

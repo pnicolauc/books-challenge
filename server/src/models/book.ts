@@ -10,7 +10,7 @@ typia.createIs<IBookUrlParams>();
 typia.createIs<IBookReservationBody>();
 
 type NumberPattern = Pattern<"^-?[0-9]+(\\.[0-9]+)?(e\\+[0-9]+)?$">;
-
+type OptionalNumberPattern = Pattern<"^(-?[0-9]+(\\.[0-9]+)?(e\\+[0-9]+)?)?$">;
 export interface IBookCsvEntry {
   book_id: string & NumberPattern;
   goodreads_book_id: string & NumberPattern;
@@ -18,9 +18,9 @@ export interface IBookCsvEntry {
   work_id: string & NumberPattern;
   books_count: string & NumberPattern;
   isbn: string;
-  isbn13: string & NumberPattern;
+  isbn13: string & OptionalNumberPattern;
   authors: string;
-  original_publication_year: string & NumberPattern;
+  original_publication_year?: string & OptionalNumberPattern;
   original_title: string;
   title: string;
   language_code: string;
@@ -78,11 +78,11 @@ export const Book = dbClient().define(
     workId: DataTypes.INTEGER,
     booksCount: DataTypes.INTEGER,
     isbn: DataTypes.STRING,
-    isbn13: DataTypes.INTEGER,
-    authors: DataTypes.STRING,
+    isbn13: DataTypes.BIGINT,
+    authors: DataTypes.TEXT,
     originalPublicationYear: DataTypes.INTEGER,
-    originalTitle: DataTypes.STRING,
-    title: DataTypes.STRING,
+    originalTitle: DataTypes.TEXT,
+    title: DataTypes.TEXT,
     languageCode: DataTypes.STRING,
     averageRating: DataTypes.FLOAT,
     ratingsCount: DataTypes.INTEGER,
