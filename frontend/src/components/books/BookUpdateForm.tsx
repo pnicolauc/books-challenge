@@ -147,6 +147,18 @@ export const BookUpdateForm = ({ book }: BookUpdateFormProps) => {
       type: "text",
       defaultValue: `${book.smallImageUrl}`,
     },
+    {
+      title: "Reserved By",
+      name: "reservedBy",
+      type: "text",
+      defaultValue: `${state.data?.reservedBy ? state.data.reservedBy : ""}`,
+    },
+    {
+      title: `Reserved Until`,
+      name: "reservedUntil",
+      type: "datetime-local",
+      defaultValue: `${state.data?.reservedUntil ? state.data?.reservedUntil.slice(0, -1) : ""}`,
+    },
   ];
 
   return (
@@ -171,6 +183,16 @@ export const BookUpdateForm = ({ book }: BookUpdateFormProps) => {
             />
           </InputGroup>
         ))}
+      </div>
+      <div className="flex items-center justify-start my-2">
+        <Label htmlFor="clearReservation">Clear Reservation (refresh to see reservation updates)</Label>
+        <div className="ml-2">
+          <Input
+            type="checkbox"
+            id="clearReservation"
+            name="clearReservation"
+          />
+        </div>
       </div>
       <FormSubmitButton>Update</FormSubmitButton>
     </form>

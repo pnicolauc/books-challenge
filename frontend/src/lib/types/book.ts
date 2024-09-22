@@ -22,7 +22,14 @@ export interface IBook {
   ratings5: number;
   imageUrl: string;
   smallImageUrl: string;
+  reservedUntil?: string | null;
+  reservedBy?: string | null;
   etag?: string;
+}
+
+export interface IBookReservation {
+  reservedBy: string;
+  reservedUntil: Date;
 }
 
 export interface IBookSearchParams {

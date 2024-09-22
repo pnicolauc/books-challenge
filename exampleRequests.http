@@ -36,6 +36,38 @@ GET http://localhost:3000/books?page=1&pageSize=10&authors=J&title=Harry&origina
 ### Get Book detail
 GET http://localhost:3000/books/3
 
+### Update/Create book
+PUT http://localhost:3000/books/3
+Authorization: Basic dXNlcjE6cGFzc3dvcmQ=
+Content-Type: application/json
+
+{
+  "bookId": 3,
+  "goodreadsBookId": 41865,
+  "bestBookId": 41865,
+  "workId": 3212258,
+  "booksCount": 226,
+  "isbn": "316015849",
+  "isbn13": 92323,
+  "authors": "Stephenie Meyer",
+  "originalPublicationYear": 2005,
+  "originalTitle": "Twilight",
+  "title": "Twilight (Twilight, #1)",
+  "languageCode": "en-US",
+  "averageRating": 3.57,
+  "ratingsCount": 3866839,
+  "workRatingsCount": 3916824,
+  "workTextReviewsCount": 95009,
+  "ratings1": 456191,
+  "ratings2": 436802,
+  "ratings3": 793319,
+  "ratings4": 875073,
+  "ratings5": 1355439,
+  "imageUrl": "https://images.gr-assets.com/books/1361039443m/41865.jpg",
+  "smallImageUrl": "https://images.gr-assets.com/books/1361039443s/41865.jpg",
+  "reservedUntil": null,
+  "reservedBy": null
+}
 
 ### Update Book with Etag
 PUT http://localhost:3000/books/3
@@ -71,5 +103,11 @@ If-Match: 0b5d60a7a9668a79e1b6ac7282cb1d32
   "reservedBy": null
 }
 
+### Reserve Book
+POST http://localhost:3000/books/3/reserve
+Content-Type: application/json
 
+{
+  "reservedBy": "Nicolau"
+}
 

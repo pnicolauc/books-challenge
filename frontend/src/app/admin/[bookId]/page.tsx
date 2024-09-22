@@ -4,7 +4,7 @@ import { PageFrame } from "@/components/frames/PageFrame";
 import { ArrowLeft } from "@/components/icons/ArrowLeft";
 import { Link } from "@/components/links/Link";
 
-export const revalidate = 1;
+export const fetchCache = 'force-no-store';
 
 interface AdminBookPageProps {
   params: {

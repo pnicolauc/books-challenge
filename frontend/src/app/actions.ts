@@ -1,11 +1,12 @@
 "use server";
 import { booksApi } from "@/api/booksApi";
-import { IBook } from "@/lib/types/book";
+import { IBook, IBookReservation } from "@/lib/types/book";
 import { IOperationResult } from "@/lib/types/shared";
 import { revalidatePath } from "next/cache";
 import { redirect, RedirectType } from "next/navigation";
 
 const convertFormDataToObject = (formData: FormData): IBook => {
+  const reservedUntil = formData.get("reservedUntil") as string && new Date(formData.get("reservedUntil") as string);
   const book: IBook = {
     bookId: Number(formData.get("bookId")),
     goodreadsBookId: Number(formData.get("goodreadsBookId")),
@@ -30,6 +31,8 @@ const convertFormDataToObject = (formData: FormData): IBook => {
     ratings5: Number(formData.get("ratings5")),
     imageUrl: formData.get("imageUrl") as string,
     smallImageUrl: formData.get("smallImageUrl") as string,
+    reservedUntil: !formData.get("clearReservation") && reservedUntil ? new Date(reservedUntil.getTime() - reservedUntil.getTimezoneOffset() * 60000).toISOString() : null,
+    reservedBy: !formData.get("clearReservation") ? formData.get("reservedBy") as string : null,
   };
 
   return book;
@@ -43,7 +46,7 @@ export const updateBook = async (
 
   let etag: string | undefined = undefined;
 
-  if(formData.get("etag")) {
+  if (formData.get("etag")) {
     etag = formData.get("etag") as string;
   }
 
@@ -64,7 +67,7 @@ export const uploadBooks = async (
   prevState: IOperationResult<void>,
   formData: FormData
 ): Promise<IOperationResult<void>> => {
-  if(!formData.get("file")) {
+  if (!formData.get("file")) {
     return {
       success: false,
       error: "No file was uploaded",
@@ -73,6 +76,23 @@ export const uploadBooks = async (
   }
 
   return await booksApi.upload(formData);
+};
+
+export const reserveBook = async (
+  prevState: IOperationResult<IBookReservation>,
+  formData: FormData
+): Promise<IOperationResult<IBookReservation>> => {
+  if (!formData.get("bookId") || !formData.get("reservedBy")) {
+    return {
+      success: false,
+      error: "Invalid request",
+    };
+  }
+
+  return booksApi.reserve(
+    formData.get("bookId") as string,
+    formData.get("reservedBy") as string
+  );
 };
 
 export const searchBooks = async (formData: FormData) => {
@@ -110,5 +130,5 @@ export const searchBooks = async (formData: FormData) => {
       originalPublicationYear.valueOf() as string
     );
   }
-  redirect(`?${newSearchParams.toString()}`, RedirectType.push);
+  redirect(`?${newSearchParams.toString()}`, RedirectType.replace);
 };

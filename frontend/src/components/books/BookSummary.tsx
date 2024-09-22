@@ -1,12 +1,16 @@
 import Image from "next/image";
 import { Rating } from "./Rating";
 import { IBook } from "@/lib/types/book";
+import { ReservedBadge } from "./ReservedBadge";
 
 interface BookSummaryProps {
   book: IBook;
 }
 
 export const BookSummary = ({ book }: BookSummaryProps) => {
+  const isBookReserved =
+    !!book?.reservedUntil && new Date(book.reservedUntil) > new Date();
+
   return (
     <div className="flex flex-col">
       <div className="m-2 flex">
@@ -33,6 +37,7 @@ export const BookSummary = ({ book }: BookSummaryProps) => {
             </div>
             <p className="font-normal text-gray-400">{book.languageCode}</p>
             <Rating rating={book.averageRating} />
+            <div>{isBookReserved && <ReservedBadge />}</div>
           </div>
         </div>
       </div>

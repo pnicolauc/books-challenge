@@ -11,7 +11,7 @@ import { Link } from "@/components/links/Link";
 import { IBook, IBookSearchParams } from "@/lib/types/book";
 import { getChangedQueryParams } from "@/lib/filters";
 
-export const revalidate = 60;
+export const fetchCache = 'force-no-store';
 
 interface PublicBooksPageProps {
   searchParams: IBookSearchParams;
@@ -24,9 +24,9 @@ export default async function PublicBooksPage({ searchParams }: PublicBooksPageP
   const bookResult = await booksApi.getAll(searchParams);
 
   const Header = () => (
-    <div className="md:flex justify-between">
+    <div className="justify-between">
       <BookSearchForm {...searchParams} />
-      <div className="flex items-end justify-end">
+      <div>
         <BookSortFilter
           setSort={(sort) => getChangedQueryParams("sort", sort, searchParams)}
           sort={searchParams.sort}
@@ -62,7 +62,7 @@ export default async function PublicBooksPage({ searchParams }: PublicBooksPageP
 
   if (bookResult.success && bookResult.data!.items.length > 0) {
     list = (
-      <div className="my-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 overflow-hidden">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 overflow-hidden">
         {bookResult.data!.items.map((book: IBook) => (
           <LinkCard key={book.bookId} href={book.bookId.toString()}>
             <BookSummary book={book} />

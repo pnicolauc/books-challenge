@@ -1,12 +1,12 @@
 import typia from "typia";
-import { IBookReservationBody, IBookUrlParams } from "../../models/book";
+import { IBookReservation, IBookReservationBody, IBookUrlParams } from "../../models/book";
 import { Request, Response } from "express";
 import { BookService } from "../../services/booksService";
 
 const fifteenMinutesInMilliseconds = 15 * 60 * 1000;
 
 export default async (
-  req: Request<IBookUrlParams, {}, IBookReservationBody, {}>,
+  req: Request<IBookUrlParams, IBookReservation, IBookReservationBody, {}>,
   res: Response
 ) => {
   const validatedFilter = typia.validate<IBookUrlParams>(req.params);
@@ -22,8 +22,10 @@ export default async (
 
   const dbResult = await BookService.reserve(parseInt(req.params.bookId), req.body.reservedBy, fifteenMinutesFromNow);
 
-  if (!dbResult.success) {
-    res.status(400).send();
+  if (!dbResult.success && dbResult.error === "Conflict") {
+    res.status(409).send({
+      reservedUntil: dbResult.data?.reservedUntil,
+    });
     return;
   }
 
@@ -31,4 +33,6 @@ export default async (
     res.status(500).send();
     return;
   }
+
+  res.status(200).send(dbResult.data);
 };

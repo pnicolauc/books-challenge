@@ -1,11 +1,11 @@
-import { IBook, IBookSearchParams } from '@/lib/types/book';
-import { IFindResult, IOperationResult } from '@/lib/types/shared';
-import { headers } from 'next/headers'
+import { IBook, IBookReservation, IBookSearchParams } from "@/lib/types/book";
+import { IFindResult, IOperationResult } from "@/lib/types/shared";
+import { headers } from "next/headers";
 
 const booksApiUrl = process.env.BOOKS_BACKEND_URL;
 
-if(booksApiUrl === undefined) {
-  throw new Error("BOOKS_BACKEND_URL is not set")
+if (booksApiUrl === undefined) {
+  throw new Error("BOOKS_BACKEND_URL is not set");
 }
 
 const errorMessageHelper = (response: Response): string | undefined => {
@@ -38,10 +38,12 @@ const errorMessageHelper = (response: Response): string | undefined => {
   }
 
   return undefined;
-}
+};
 
 export const booksApi = {
-  getAll: async (filters: IBookSearchParams): Promise<IOperationResult<IFindResult<IBook>>> => {
+  getAll: async (
+    filters: IBookSearchParams
+  ): Promise<IOperationResult<IFindResult<IBook>>> => {
     try {
       let url = `${booksApiUrl}/books`;
       if (filters) {
@@ -55,13 +57,13 @@ export const booksApi = {
       return {
         success: isSuccess,
         error: errorMessageHelper(response),
-        data: body as IFindResult<IBook>
+        data: body as IFindResult<IBook>,
       };
     } catch (e) {
       console.log(e);
       return {
         success: false,
-        error: "An error occurred"
+        error: "An error occurred",
       };
     }
   },
@@ -71,7 +73,7 @@ export const booksApi = {
       const isSuccess = response.status === 200;
       const body: unknown = isSuccess ? await response.json() : null;
 
-      if(body && response.headers.has("etag")) {
+      if (body && response.headers.has("etag")) {
         (body as IBook).etag = response.headers.get("etag") ?? undefined;
       }
 
@@ -85,27 +87,31 @@ export const booksApi = {
 
       return {
         success: false,
-        error: "An error occurred"
+        error: "An error occurred",
       };
     }
   },
-  update: async (bookId: string, data: object, etag?: string): Promise<IOperationResult<void>> => {
+  update: async (
+    bookId: string,
+    data: object,
+    etag?: string
+  ): Promise<IOperationResult<void>> => {
     try {
-      const authHeader = headers().get('Authorization');
+      const authHeader = headers().get("Authorization");
 
       if (!authHeader) {
         return {
           success: false,
-          error: "Authorization header is missing"
+          error: "Authorization header is missing",
         };
       }
 
-      const requestHeaders: Record<string,string> = {
+      const requestHeaders: Record<string, string> = {
         "Content-Type": "application/json",
-        "Authorization": authHeader
+        Authorization: authHeader,
       };
 
-      if(etag) {
+      if (etag) {
         requestHeaders["If-Match"] = etag;
       }
 
@@ -125,18 +131,18 @@ export const booksApi = {
       console.log(e);
       return {
         success: false,
-        error: "An error occurred"
+        error: "An error occurred",
       };
     }
   },
   upload: async (data: FormData): Promise<IOperationResult<void>> => {
     try {
-      const authHeader = headers().get('Authorization');
+      const authHeader = headers().get("Authorization");
 
       if (!authHeader) {
         return {
           success: false,
-          error: "Authorization header is missing"
+          error: "Authorization header is missing",
         };
       }
 
@@ -145,7 +151,7 @@ export const booksApi = {
         method: "POST",
         body: data,
         headers: {
-          "Authorization": authHeader
+          Authorization: authHeader,
         },
       });
       const isSuccess = response.status === 202;
@@ -158,8 +164,40 @@ export const booksApi = {
       console.log(e);
       return {
         success: false,
-        error: "An error occurred"
+        error: "An error occurred",
       };
     }
-  }
+  },
+  reserve: async (bookId: string, reservedBy: string): Promise<IOperationResult<IBookReservation>> => {
+    try {
+      const data = {
+        reservedBy
+      };
+
+      const url = `${booksApiUrl}/books/${bookId}/reserve`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const isSuccess = response.status === 200;
+      const isConflict = response.status === 409;
+      const body: unknown = isSuccess || isConflict ? await response.json() : null;
+
+      return {
+        success: isSuccess,
+        error: errorMessageHelper(response),
+        data: body as IBookReservation,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        success: false,
+        error: "An error occurred",
+      };
+    }
+  },
 };

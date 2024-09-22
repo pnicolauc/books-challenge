@@ -7,7 +7,7 @@ interface BookDetailsProps {
 
 export const BookDetails = ({ book }: BookDetailsProps) => {
     return (
-        <div>
+        <div className="font-bold flex flex-col gap-2">
             <div className="flex items-center">
                 <Stars number={1} />
                 <p>{book.ratings1}</p>

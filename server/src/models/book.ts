@@ -139,3 +139,8 @@ export interface IBookSearchFilter {
 export interface IBookReservationBody {
   reservedBy: string;
 }
+
+export interface IBookReservation {
+  reservedBy: string;
+  reservedUntil: Date;
+}

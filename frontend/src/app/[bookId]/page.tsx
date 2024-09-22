@@ -1,11 +1,13 @@
 import { booksApi } from "@/api/booksApi";
 import { BookDetails } from "@/components/books/BookDetails";
+import { BookReserveForm } from "@/components/books/BookReserveForm";
 import { BookSummary } from "@/components/books/BookSummary";
+import { Card } from "@/components/frames/Card";
 import { PageFrame } from "@/components/frames/PageFrame";
 import { ArrowLeft } from "@/components/icons/ArrowLeft";
 import { Link } from "@/components/links/Link";
 
-export const revalidate = 60;
+export const fetchCache = 'force-no-store';
 
 interface PublicBookPageProps {
   params: {
@@ -24,6 +26,8 @@ export default async function PublicBookPage({ params: { bookId } }: PublicBookP
   );
 
   const Footer = () => <></>;
+  
+  const isBookReserved = (!!bookResult.data?.reservedUntil) && (new Date(bookResult.data.reservedUntil) > new Date()); 
 
   return (
     <PageFrame
@@ -33,13 +37,18 @@ export default async function PublicBookPage({ params: { bookId } }: PublicBookP
       footer={<Footer />}
     >
       {bookResult.success === true && bookResult.data  ? (
-        <div>
-          <div className="md:mr-10 my-20">
+        <div className="flex flex-col items-center">
+        <div className="flex flex-col gap-2 w-full lg:w-96">
+          <div className="md:mr-10 my-10">
             <BookSummary book={bookResult.data} />
           </div>
-          <div>
+          <Card title="Details">
             <BookDetails book={bookResult.data} />
-          </div>
+          </Card>
+          <Card title="Reservation Details">
+            {isBookReserved ? <div>Book is reserved until {bookResult.data.reservedUntil}</div> : <BookReserveForm book={bookResult.data} />}
+          </Card>
+        </div>
         </div>
       ) : (
         <div>Book not found</div>

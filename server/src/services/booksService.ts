@@ -1,5 +1,10 @@
 import { Op, OrderItem } from "sequelize";
-import { IBook, IBookSearchFilter, Book } from "../models/book";
+import {
+  IBook,
+  IBookSearchFilter,
+  Book,
+  IBookReservation,
+} from "../models/book";
 import { IOperationResult, IFindResult } from "../models/shared";
 import dbClient from "../models/dbClient";
 import crypto from "crypto";
@@ -21,7 +26,7 @@ export class BookService {
     }
   }
 
-  static async find (
+  static async find(
     filter: IBookSearchFilter
   ): Promise<IOperationResult<IFindResult<IBook>>> {
     const where: any = {};
@@ -63,13 +68,13 @@ export class BookService {
           page,
           pageSize,
           totalItems: count,
-        }
+        },
       };
     } catch (error) {
       throw error;
     }
   }
-  
+
   static async upsertMany(books: IBook[]): Promise<IOperationResult<boolean>> {
     try {
       await Book.bulkCreate(books as any, {
@@ -106,7 +111,7 @@ export class BookService {
     } catch (error) {
       return {
         success: false,
-        data: false
+        data: false,
       };
     }
   }
@@ -116,12 +121,12 @@ export class BookService {
       const [_, created] = await Book.upsert(book as any);
       return {
         success: true,
-        data: created
+        data: created,
       };
     } catch (error) {
       return {
         success: false,
-        data: false
+        data: false,
       };
     }
   }
@@ -147,7 +152,7 @@ export class BookService {
         await transaction.rollback();
         return {
           success: false,
-          data: false
+          data: false,
         };
       }
 
@@ -171,56 +176,64 @@ export class BookService {
     bookId: number,
     reservedBy: string,
     reservedUntil: Date
-  ): Promise<IOperationResult<boolean>> {
+  ): Promise<IOperationResult<IBookReservation>> {
     const transaction = await dbClient().transaction();
 
-  try {
-    const book = await Book.findByPk(bookId, { transaction });
-    if (!book) {
+    try {
+      const book = await Book.findByPk(bookId, { transaction });
+      if (!book) {
+        await transaction.rollback();
+        return {
+          success: false,
+          data: null,
+          error: "Book not found",
+        };
+      }
+
+      if (
+        book.dataValues.reservedBy &&
+        book.dataValues.reservedUntil > new Date()
+      ) {
+        await transaction.rollback();
+        return {
+          success: false,
+          data: {
+            reservedBy: book.dataValues.reservedBy,
+            reservedUntil: book.dataValues.reservedUntil,
+          },
+          error: "Conflict",
+        };
+      }
+
+      book.set({
+        reservedBy,
+        reservedUntil,
+      });
+      await book.save({ transaction });
+
+      await transaction.commit();
+      return {
+        success: true,
+        data: {
+          reservedBy,
+          reservedUntil,
+        },
+      };
+    } catch (error) {
       await transaction.rollback();
       return {
         success: false,
-        data: false,
-        error: "Book not found",
+        data: null,
       };
     }
-
-    if (book.dataValues.reservedUntil && book.dataValues.reservedUntil > new Date()) {
-      await transaction.rollback();
-      return {
-        success: false,
-        data: false,
-        error: "Book is already reserved",
-      };
-    }
-
-    book.set({
-      reservedBy,
-      reservedUntil,
-    })
-    await book.save({ transaction });
-
-    await transaction.commit();
-    return {
-      success: true,
-      data: true,
-    };
-  } catch (error) {
-    await transaction.rollback();
-    return {
-      success: false,
-      data: false,
-    };
-  }
   }
 
   static getETag(book: IBook): string {
     const dataString = JSON.stringify(book);
-    return crypto.createHash('md5').update(dataString).digest('hex');
+    return crypto.createHash("md5").update(dataString).digest("hex");
   }
 
   static validateEtag(book: IBook, etag: string): boolean {
     return this.getETag(book) === etag;
   }
-
-};
+}
