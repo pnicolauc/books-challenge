@@ -3,9 +3,9 @@ import { reserveBook } from "@/app/actions";
 import { FormSubmitButton } from "../buttons/FormSubmitButton";
 import { InputGroup } from "../buttons/InputGroup";
 import { Label } from "../forms/Label";
-import { useFormState } from "react-dom";
 import { IBook } from "@/lib/types/book";
 import { Input } from "../forms/Input";
+import { useFormState } from "react-dom";
 
 interface BookReserveFormProps {
   book: IBook;
@@ -16,7 +16,7 @@ export const BookReserveForm = ({ book }: BookReserveFormProps) => {
     success: false,
     data: {
       bookId: book.bookId,
-      reservedBy: book.reservedBy,
+      reservedBy: book.reservedBy ?? "",
     },
   });
 
@@ -33,7 +33,7 @@ export const BookReserveForm = ({ book }: BookReserveFormProps) => {
         </div>
       </div>
       <div className={state.success ? "text-green-500" : "invisible"}>
-        Book was successfully reserved for 15 minutes.
+        Book was successfully reserved until {state.data?.reservedUntil?.toISOString()}.
       </div>
       {state.error && <div className="text-red-500">{state.error}</div>}
     </form>

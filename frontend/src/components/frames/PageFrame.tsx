@@ -25,12 +25,12 @@ export const PageFrame = ({
           <h1 className="text-xl font-bold">{title}</h1>
           <div>{navHeader}</div>
         </nav>
-        <div className="mb-2 mx-2 container mx-auto">{header}</div>
+        <div className="mb-2 mx-2 container mx-auto px-4">{header}</div>
       </header>
       <div className="overflow-y-auto   h-full">
         <main className="p-4 container mx-auto flex-1">{children}</main>
       </div>
-      <footer className="row-start-3 flex items-center justify-center mt-3 container mx-auto">
+      <footer className="row-start-3 flex items-center justify-center my-3 container mx-auto">
         {footer}
       </footer>
     </div>

@@ -32,6 +32,12 @@ export interface IBookReservation {
   reservedUntil: Date;
 }
 
+export interface IBookReservationForm {
+  bookId: number;
+  reservedBy?: string;
+  reservedUntil?: Date;
+}
+
 export interface IBookSearchParams {
   page?: string;
   pageSize?: string;

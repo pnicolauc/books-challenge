@@ -1,6 +1,6 @@
 "use server";
 import { booksApi } from "@/api/booksApi";
-import { IBook, IBookReservation } from "@/lib/types/book";
+import { IBook, IBookReservationForm } from "@/lib/types/book";
 import { IOperationResult } from "@/lib/types/shared";
 import { revalidatePath } from "next/cache";
 import { redirect, RedirectType } from "next/navigation";
@@ -79,9 +79,9 @@ export const uploadBooks = async (
 };
 
 export const reserveBook = async (
-  prevState: IOperationResult<IBookReservation>,
+  state: IOperationResult<IBookReservationForm>,
   formData: FormData
-): Promise<IOperationResult<IBookReservation>> => {
+): Promise<IOperationResult<IBookReservationForm>> => {
   if (!formData.get("bookId") || !formData.get("reservedBy")) {
     return {
       success: false,
@@ -89,10 +89,31 @@ export const reserveBook = async (
     };
   }
 
-  return booksApi.reserve(
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath(`/${formData.get("bookId") as string}`);
+  revalidatePath(`/admin/${formData.get("bookId") as string}`);
+
+  const response = await booksApi.reserve(
     formData.get("bookId") as string,
     formData.get("reservedBy") as string
-  );
+  )
+
+  if(response.success && response.data) {
+    return {
+      success: true,
+      data: {
+        bookId: Number(formData.get("bookId")),
+        reservedBy: response.data.reservedBy,
+        reservedUntil: new Date(response.data.reservedUntil)
+      }
+    }
+  } else {
+    return {
+      success: false,
+      error: response.error
+    }
+  }
 };
 
 export const searchBooks = async (formData: FormData) => {
@@ -130,5 +151,5 @@ export const searchBooks = async (formData: FormData) => {
       originalPublicationYear.valueOf() as string
     );
   }
-  redirect(`?${newSearchParams.toString()}`, RedirectType.replace);
+  redirect(`?${newSearchParams.toString()}`, RedirectType.push);
 };

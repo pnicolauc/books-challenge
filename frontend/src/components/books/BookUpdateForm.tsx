@@ -15,7 +15,7 @@ interface FormInputProps {
   title: string;
   name: string;
   type: string;
-  defaultValue: string;
+  defaultValue: string | undefined;
   weight?: number;
 }
 
@@ -151,13 +151,13 @@ export const BookUpdateForm = ({ book }: BookUpdateFormProps) => {
       title: "Reserved By",
       name: "reservedBy",
       type: "text",
-      defaultValue: `${state.data?.reservedBy ? state.data.reservedBy : ""}`,
+      defaultValue: book?.reservedBy ? book.reservedBy : "",
     },
     {
       title: `Reserved Until`,
       name: "reservedUntil",
       type: "datetime-local",
-      defaultValue: `${state.data?.reservedUntil ? state.data?.reservedUntil.slice(0, -1) : ""}`,
+      defaultValue: book?.reservedUntil ? `${book?.reservedUntil.slice(0, -8)}` : undefined,
     },
   ];
 
@@ -179,7 +179,7 @@ export const BookUpdateForm = ({ book }: BookUpdateFormProps) => {
               type={input.type}
               id={input.name}
               name={input.name}
-              defaultValue={input.defaultValue}
+              defaultValue={input.defaultValue !== undefined ? input.defaultValue : undefined}
             />
           </InputGroup>
         ))}
