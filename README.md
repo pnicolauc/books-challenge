@@ -7,7 +7,19 @@
 - make (optional)
 
 ### How to
+
 To run the project by deploying the 3 docker images, postgres, server application and frontend application:
+
+- Enter server folder
+```bash
+cd server
+```
+- Create env file
+```bash
+cp .env.example .env
+```
+- Replace `SYSTEM_ADMIN_EMAIL`, `MAIL_SENDER`, `MAILJET_API_KEY` and `MAILJET_API_SECRET` to enable sending emails on upload (will log to console if not configured)
+
 ```bash
 make run
 ```
